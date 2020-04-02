@@ -1,4 +1,4 @@
-package io.javabrains.coronavariustracker;
+package io.javabrains.coronavirustracker;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
