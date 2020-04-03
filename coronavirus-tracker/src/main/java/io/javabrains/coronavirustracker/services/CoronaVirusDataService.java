@@ -22,8 +22,18 @@ public class CoronaVirusDataService {
     private static String VIRUS_DATA_URL = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv";
     //将数据缓存在内存中
     private List<LocationStats> allStats = new ArrayList<>();
+
+    public List<LocationStats> getAllStats() {
+        return allStats;
+    }
+
+    public void setAllStats(List<LocationStats> allStats) {
+        this.allStats = allStats;
+    }
+
     @PostConstruct
     @Scheduled(cron = "* * 1 * * *")
+    //cron是一种设置时间的格式，这里是每小时更新一次
     public void fetchVirusData() throws IOException, InterruptedException {
         List<LocationStats> newStats = new ArrayList<>();
         //设置http 请求
@@ -42,9 +52,11 @@ public class CoronaVirusDataService {
             locationStats.setState(record.get("Province/State"));
             locationStats.setCountry(record.get("Country/Region"));
             //找到最新一天的总数
-            locationStats.setLatestTotalCases(Integer.parseInt(record.get(record.size() - 1)));
+            int latestCases = Integer.parseInt(record.get(record.size() - 1));
+            int prevDayCases = Integer.parseInt(record.get(record.size() - 2));
+            locationStats.setLatestTotalCases(latestCases);
+            locationStats.setDiffFromPrevDay(latestCases-prevDayCases);
 
-            System.out.println(locationStats);
             newStats.add(locationStats);
         }
         this.allStats = newStats;
